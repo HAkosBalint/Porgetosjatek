@@ -5,66 +5,175 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Szerencse RPG - Hősök Hajnala</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: white; display: flex; margin: 0; height: 100vh; overflow: hidden; }
-        .sidebar { width: 60px; background: #1a1a1a; border-right: 1px solid #333; display: flex; flex-direction: column; align-items: center; padding: 15px 0; gap: 15px; z-index: 10; }
-        .side-btn { width: 45px; height: 45px; background: #333; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 22px; transition: 0.3s; border: 1px solid #444; }
-        .side-btn:hover { background: gold; color: black; }
-        .logout-btn { position: fixed; top: 15px; right: 15px; width: 45px; height: 45px; background: rgba(255, 215, 0, 0.1); border: 2px solid gold; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 100; }
-        .main-content { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 10px; position: relative; }
-        .game-container { background: #1e1e1e; padding: 25px; border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center; border: 1px solid #333; text-align: center; }
-
-        /* GENERÁLT KERÉK STÍLUSA */
-        .wheel-wrapper { position: relative; width: 280px; height: 280px; margin: 20px auto; }
-        #lucky-wheel-canvas { 
-            width: 100%; height: 100%; 
-            border-radius: 50%; 
-            border: 5px solid gold; 
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
-            transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1);
+        /* ALAP ELRENDEZÉS MOBILRA */
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: #0f0f0f; 
+            color: white; 
+            margin: 0; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden;
         }
-        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 35px; color: gold; z-index: 200; text-shadow: 0 0 10px black; }
 
-        .stat-box { display: flex; gap: 10px; background: #111; padding: 10px 15px; border-radius: 30px; border: 1px solid gold; margin-top: 15px; font-weight: bold; font-size: 0.85em; }
+        .main-content { 
+            flex-grow: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            width: 100%; 
+        }
+
+        .game-container { 
+            background: #1e1e1e; 
+            padding: 20px; 
+            width: 100%; 
+            height: 100%; 
+            max-width: 500px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        /* ALSÓ MENÜ */
+        .sidebar { 
+            width: 100%; 
+            height: 70px; 
+            background: #1a1a1a; 
+            border-top: 1px solid #333; 
+            display: flex; 
+            flex-direction: row; 
+            justify-content: center; 
+            align-items: center;
+            gap: 40px; 
+        }
+
+        .side-btn { 
+            width: 55px; 
+            height: 55px; 
+            background: #333; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            font-size: 26px; 
+            border: 1px solid #444; 
+        }
+
+        /* KARAKTER NAGYÍTÁSA */
+        #active-char-img { 
+            width: 85%; 
+            max-width: 300px; 
+            aspect-ratio: 2/3; 
+            object-fit: cover; 
+            border-radius: 20px; 
+            border: 3px solid gold; 
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .char-name { font-size: 2.2em; color: gold; font-weight: 900; margin: 10px 0; }
+
+        /* SZERENCSEKERÉK NAGYÍTÁSA */
+        .wheel-wrapper { 
+            position: relative; 
+            width: 90vw; 
+            height: 90vw; 
+            max-width: 380px; 
+            max-height: 380px; 
+            margin: 20px auto; 
+        }
+
+        #lucky-wheel-canvas { 
+            width: 100%; 
+            height: 100%; 
+            border-radius: 50%; 
+            border: 6px solid gold; 
+            transition: transform 5s cubic-bezier(0.2, 0, 0, 1);
+            will-change: transform;
+        }
+
+        .wheel-pointer { 
+            position: absolute; 
+            top: -20px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            font-size: 40px; 
+            color: gold; 
+            z-index: 100; 
+            text-shadow: 0 0 15px black; 
+        }
+
+        .stat-box { 
+            display: flex; 
+            width: 90%; 
+            justify-content: space-around; 
+            background: #111; 
+            padding: 15px; 
+            border-radius: 30px; 
+            border: 1px solid gold; 
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .primary-btn { 
+            width: 90%; 
+            padding: 18px; 
+            background: gold; 
+            border: none; 
+            border-radius: 15px; 
+            font-weight: bold; 
+            font-size: 1.2em; 
+            cursor: pointer; 
+            margin-top: 20px;
+        }
+
+        .logout-btn { position: fixed; top: 15px; right: 15px; width: 45px; height: 45px; background: #1a1a1a; border: 2px solid gold; border-radius: 10px; display: flex; align-items: center; justify-content: center; z-index: 1000; }
         .hidden { display: none !important; }
-        .primary-btn { width: 100%; padding: 14px; background: gold; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 15px; }
-        input { width: 85%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; background: #333; color: white; }
+        input { width: 85%; padding: 15px; margin: 10px 0; border-radius: 10px; border: none; background: #333; color: white; font-size: 1.1em; }
     </style>
 </head>
 <body>
 
     <div id="logout-ui" class="logout-btn hidden" onclick="logout()">🚪</div>
-    <div id="sidebar" class="sidebar hidden">
-        <div class="side-btn" onclick="showSection('game-ui')">👤</div>
-        <div class="side-btn" onclick="showSection('wheel-ui')">🎡</div>
-    </div>
 
     <div class="main-content">
         <div class="game-container" id="auth-box">
-            <h2 style="color: gold;">Hősök Hajnala</h2>
-            <input type="email" id="email" placeholder="E-mail">
+            <h1 style="color: gold; font-size: 2.5em;">Hősök Hajnala</h1>
+            <input type="email" id="email" placeholder="E-mail cím">
             <input type="password" id="password" placeholder="Jelszó">
             <button class="primary-btn" id="auth-btn">Belépés</button>
         </div>
 
+        <div class="game-container hidden" id="game-ui">
+            <h2 class="char-name" id="char-name-display">-</h2>
+            <img id="active-char-img" src="" alt="Hősöd">
+            <div class="stat-box">
+                <span style="color: #ff4d4d;" id="stat-hp">❤️ 0</span>
+                <span style="color: gold;" id="stat-atk">⚔️ 0</span>
+                <span style="color: #ffd700;" id="stat-gold">💰 0</span>
+            </div>
+        </div>
+
         <div class="game-container hidden" id="wheel-ui">
-            <h2 style="color: gold; margin-bottom: 10px;">Szerencsekerék</h2>
+            <h2 style="color: gold; font-size: 1.8em;">A Sors Kereke</h2>
             <div class="wheel-wrapper">
                 <div class="wheel-pointer">▼</div>
                 <canvas id="lucky-wheel-canvas" width="500" height="500"></canvas>
             </div>
             <button class="primary-btn" id="spin-btn" onclick="spinWheel()">Pörgetés!</button>
-            <p id="wheel-result" style="margin-top: 15px; font-weight: bold; color: gold;"></p>
+            <p id="wheel-result" style="margin-top: 15px; font-weight: bold; color: gold; font-size: 1.3em; min-height: 1.5em;"></p>
         </div>
+    </div>
 
-        <div class="game-container hidden" id="game-ui">
-            <h2 id="char-name-display" style="color: gold;">-</h2>
-            <img id="active-char-img" src="" style="width: 150px; border-radius: 15px; border: 2px solid gold;">
-            <div class="stat-box">
-                <span id="stat-hp" style="color: #ff4d4d;">❤️ HP: 0</span>
-                <span id="stat-atk" style="color: gold;">⚔️ ATK: 0</span>
-                <span id="stat-gold" style="color: #ffd700;">💰 0</span>
-            </div>
-        </div>
+    <div id="sidebar" class="sidebar hidden">
+        <div class="side-btn" onclick="showSection('game-ui')">👤</div>
+        <div class="side-btn" onclick="showSection('wheel-ui')">🎡</div>
     </div>
 
     <script type="module">
@@ -92,29 +201,29 @@
             { label: "+5 ATK", color: "#2a2a2a", type: 'atk', val: 5 }
         ];
 
-        let currentUser = null, isSpinning = false;
+        let currentUser = null, isSpinning = false, currentRotation = 0;
 
         function drawWheel() {
             const canvas = document.getElementById("lucky-wheel-canvas");
             const ctx = canvas.getContext("2d");
             const centerX = 250, centerY = 250, radius = 240;
+            const sliceAngle = (2 * Math.PI) / PRIZES.length;
 
             PRIZES.forEach((prize, i) => {
-                const angle = (2 * Math.PI) / PRIZES.length;
                 ctx.beginPath();
                 ctx.moveTo(centerX, centerY);
-                ctx.arc(centerX, centerY, radius, i * angle, (i + 1) * angle);
+                ctx.arc(centerX, centerY, radius, i * sliceAngle, (i + 1) * sliceAngle);
                 ctx.fillStyle = prize.color;
                 ctx.fill();
                 ctx.strokeStyle = "gold";
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 3;
                 ctx.stroke();
 
                 ctx.save();
                 ctx.translate(centerX, centerY);
-                ctx.rotate(i * angle + angle / 2);
+                ctx.rotate(i * sliceAngle + sliceAngle / 2);
                 ctx.fillStyle = "white";
-                ctx.font = "bold 16px Arial";
+                ctx.font = "bold 20px Arial";
                 ctx.textAlign = "right";
                 ctx.fillText(prize.label, radius - 20, 10);
                 ctx.restore();
@@ -125,36 +234,50 @@
             if (isSpinning) return;
             isSpinning = true;
             const wheel = document.getElementById("lucky-wheel-canvas");
-            const randomDeg = Math.floor(Math.random() * 360);
-            const totalDeg = 1800 + randomDeg; // 5 teljes kör + random
-            
-            wheel.style.transform = `rotate(${totalDeg}deg)`;
+            const resultText = document.getElementById("wheel-result");
+            resultText.innerText = "Sorsolás...";
+
+            const extraRotation = Math.floor(Math.random() * 360);
+            currentRotation += 1800 + extraRotation; 
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
 
             setTimeout(async () => {
                 isSpinning = false;
-                const actualDeg = 360 - (randomDeg % 360);
-                const prizeIndex = Math.floor(actualDeg / (360 / PRIZES.length)) % PRIZES.length;
+                const actualViewAngle = currentRotation % 360;
+                // Kiszámoljuk mi van a 270 foknál (fent)
+                const prizeIndex = Math.floor(((360 - (actualViewAngle % 360)) + 270) % 360 / (360 / PRIZES.length));
                 const prize = PRIZES[prizeIndex];
 
                 const userRef = doc(db, "users", currentUser.uid);
-                let update = {};
-                if(prize.type === 'gold') update.gold = increment(prize.val);
-                else if(prize.type === 'hp') update.bonusHP = increment(prize.val);
-                else if(prize.type === 'atk') update.bonusATK = increment(prize.val);
+                let up = {};
+                if(prize.type === 'gold') up.gold = increment(prize.val);
+                else if(prize.type === 'hp') up.bonusHP = increment(prize.val);
+                else if(prize.type === 'atk') up.bonusATK = increment(prize.val);
 
-                await updateDoc(userRef, update);
-                document.getElementById("wheel-result").innerText = "Nyertél: " + prize.label;
+                await updateDoc(userRef, up);
+                const snap = await getDoc(userRef);
+                const data = snap.data();
+                
+                // Frissítés
+                document.getElementById('stat-hp').innerText = `❤️ ${100 + (data.bonusHP || 0)}`;
+                document.getElementById('stat-atk').innerText = `⚔️ ${10 + (data.bonusATK || 0)}`;
+                document.getElementById('stat-gold').innerText = `💰 ${data.gold || 0}`;
+                resultText.innerText = `Nyertél: ${prize.label}!`;
             }, 5000);
         };
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
-                document.getElementById("auth-box").classList.add("hidden");
-                document.getElementById("sidebar").classList.remove("hidden");
-                document.getElementById("logout-ui").classList.remove("hidden");
+                document.getElementById('auth-box').classList.add('hidden');
+                document.getElementById('sidebar').classList.remove('hidden');
+                document.getElementById('logout-ui').classList.remove('hidden');
+                const snap = await getDoc(doc(db, "users", user.uid));
+                const data = snap.data();
+                document.getElementById('char-name-display').innerText = data.className;
+                document.getElementById('active-char-img').src = data.className.toLowerCase() + ".png";
                 drawWheel();
-                showSection('wheel-ui');
+                showSection('game-ui');
             }
         });
 
@@ -162,6 +285,13 @@
             document.querySelectorAll('.game-container').forEach(c => c.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         };
+
+        document.getElementById('auth-btn').onclick = () => {
+            const e = document.getElementById('email').value, p = document.getElementById('password').value;
+            signInWithEmailAndPassword(auth, e, p).catch(err => alert(err.message));
+        };
+
+        window.logout = () => signOut(auth).then(() => location.reload());
     </script>
 </body>
 </html>
