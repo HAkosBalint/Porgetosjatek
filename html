@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Szerencse RPG - Belépés</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a1a; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-container { background: #2c2c2c; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 350px; text-align: center; }
+        h2 { color: gold; margin-bottom: 20px; }
+        input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; background: #444; color: white; }
+        button { width: 100%; padding: 12px; margin-top: 15px; border-radius: 5px; border: none; background: gold; color: #1a1a1a; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #ffd700; transform: scale(1.02); }
+        .toggle-link { margin-top: 15px; font-size: 0.9em; color: #bbb; cursor: pointer; }
+        .toggle-link b { color: gold; }
+        .hidden { display: none; }
+        #user-info { color: lightgreen; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container" id="auth-box">
+        <h2 id="auth-title">Bejelentkezés</h2>
+        
+        <input type="email" id="email" placeholder="E-mail cím">
+        <input type="password" id="password" placeholder="Jelszó">
+        
+        <button id="auth-btn">Belépés</button>
+        
+        <div class="toggle-link" id="toggle-auth">
+            Még nincs fiókod? <b>Regisztráció</b>
+        </div>
+    </div>
+
+    <div class="auth-container hidden" id="welcome-box">
+        <h2>Üdvözlünk!</h2>
+        <p id="user-email-display"></p>
+        <button onclick="logout()" style="background: #ff4444; color: white;">Kijelentkezés</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // IDE MÁSOLD MAJD A SAJÁT FIREBASE CONFIG-ODAT!
+        const firebaseConfig = {
+            apiKey: "AIzaSy...",
+            authDomain: "projekt-neve.firebaseapp.com",
+            projectId: "projekt-neve",
+            storageBucket: "projekt-neve.appspot.com",
+            messagingSenderId: "123456",
+            appId: "1:123456:web:abcdef"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        let isLogin = true;
+
+        // Váltás Regisztráció és Belépés között
+        document.getElementById('toggle-auth').onclick = () => {
+            isLogin = !isLogin;
+            document.getElementById('auth-title').innerText = isLogin ? "Bejelentkezés" : "Regisztráció";
+            document.getElementById('auth-btn').innerText = isLogin ? "Belépés" : "Regisztráció";
+            document.getElementById('toggle-auth').innerHTML = isLogin ? "Még nincs fiókod? <b>Regisztráció</b>" : "Már van fiókod? <b>Belépés</b>";
+        };
+
+        // Gomb kattintás kezelése
+        document.getElementById('auth-btn').onclick = async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                if (isLogin) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    alert("Sikeres belépés!");
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                    alert("Sikeres regisztráció!");
+                }
+            } catch (error) {
+                alert("Hiba: " + error.message);
+            }
+        };
+
+        // Figyeljük a felhasználó állapotát
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('auth-box').classList.add('hidden');
+                document.getElementById('welcome-box').classList.remove('hidden');
+                document.getElementById('user-email-display').innerText = "Bejelentkezve: " + user.email;
+            } else {
+                document.getElementById('auth-box').classList.remove('hidden');
+                document.getElementById('welcome-box').classList.add('hidden');
+            }
+        });
+
+        // Kijelentkezés
+        window.logout = () => signOut(auth);
+    </script>
+</body>
+</html>
+
