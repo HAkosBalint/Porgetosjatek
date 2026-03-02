@@ -12,48 +12,43 @@
         .side-btn { width: 50px; height: 50px; background: #333; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 24px; transition: 0.3s; border: 1px solid #444; }
         .side-btn:hover { background: gold; transform: scale(1.1); }
 
-        /* Kijelentkezés */
         .logout-btn { position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; background: rgba(255, 215, 0, 0.1); border: 2px solid gold; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 24px; transition: 0.3s; z-index: 100; }
         .logout-btn:hover { background: gold; transform: scale(1.1); box-shadow: 0 0 15px gold; }
 
         .main-content { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 20px; }
-        .auth-container, .game-container { background: #1e1e1e; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.7); width: 95%; max-width: 550px; text-align: center; position: relative; }
+        .game-container { background: #1e1e1e; padding: 40px 30px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); width: 95%; max-width: 500px; text-align: center; border: 1px solid #333; }
         
-        /* Karakter választó */
-        .class-selector { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
-        .class-card { border: 2px solid #444; padding: 10px; border-radius: 12px; cursor: pointer; transition: 0.3s; width: 110px; background: #252525; }
-        .class-card:hover { border-color: gold; transform: translateY(-5px); }
-        .class-card img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; }
-        
-        /* Hős profil */
-        #active-char-img { width: 100%; max-width: 420px; border-radius: 25px; border: 4px solid gold; box-shadow: 0 0 50px rgba(255, 215, 0, 0.3); animation: float 4s ease-in-out infinite; margin-bottom: 25px; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-        
-        .stat-box { display: inline-flex; gap: 25px; background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%); padding: 15px 35px; border-radius: 50px; border: 2px solid gold; font-size: 1.3em; font-weight: bold; }
-        
-        /* INFÓ GOMB */
-        .info-trigger { background: gold; color: black; border-radius: 50%; width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; margin-left: 10px; font-size: 0.6em; vertical-align: middle; transition: 0.3s; }
-        .info-trigger:hover { transform: scale(1.2); box-shadow: 0 0 10px gold; }
+        /* Javított fejléc rész a karakterlaphoz */
+        .char-header { margin-bottom: 25px; position: relative; z-index: 5; }
+        .char-name { font-size: 2.5em; color: gold; text-transform: uppercase; font-weight: 800; letter-spacing: 2px; margin: 0; text-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
 
-        /* MODAL (Felugró ablak) */
-        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; transition: 0.3s; opacity: 0; pointer-events: none; }
+        /* Hős profil kép */
+        #active-char-img { width: 100%; max-width: 380px; border-radius: 20px; border: 3px solid gold; box-shadow: 0 0 40px rgba(255, 215, 0, 0.2); animation: float 4s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        
+        .stat-box { display: inline-flex; gap: 20px; background: #111; padding: 12px 30px; border-radius: 50px; border: 1px solid gold; margin-top: 25px; font-weight: bold; }
+        
+        .info-trigger { background: gold; color: black; border-radius: 50%; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; font-size: 16px; margin-left: 10px; transition: 0.3s; box-shadow: 0 0 10px gold; border: none; }
+        .info-trigger:hover { transform: rotate(15deg) scale(1.2); }
+
+        /* MODAL */
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-content { background: #222; border: 2px solid gold; padding: 30px; border-radius: 20px; max-width: 400px; text-align: center; box-shadow: 0 0 30px gold; }
-        .modal-content h3 { color: gold; margin-top: 0; }
-        .modal-content p { line-height: 1.6; color: #ccc; }
+        .modal-content { background: #1a1a1a; border: 2px solid gold; padding: 35px; border-radius: 25px; max-width: 450px; text-align: center; box-shadow: 0 0 50px rgba(255, 215, 0, 0.3); }
+        .modal-content h3 { color: gold; font-size: 1.8em; margin-bottom: 20px; border-bottom: 1px solid #444; padding-bottom: 10px; }
+        .modal-content p { line-height: 1.8; color: #eee; font-style: italic; font-size: 1.1em; }
 
         .hidden { display: none !important; }
-        input { width: 85%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; background: #333; color: white; }
-        .primary-btn { width: 90%; padding: 15px; background: gold; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .primary-btn { width: 100%; padding: 15px; background: gold; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 20px; font-size: 1em; }
     </style>
 </head>
 <body>
 
     <div id="info-modal" class="modal-overlay" onclick="closeInfo()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 id="modal-title">Kaszt képességek</h3>
-            <p id="modal-text"></p>
-            <button class="primary-btn" onclick="closeInfo()">Értem</button>
+            <h3 id="modal-title">-</h3>
+            <p id="modal-text">-</p>
+            <button class="primary-btn" onclick="closeInfo()">Vissza a harchoz</button>
         </div>
     </div>
 
@@ -61,30 +56,25 @@
 
     <div id="sidebar" class="sidebar hidden">
         <div class="side-btn" onclick="showSection('game-ui')">👤</div>
-        <div class="side-btn" onclick="alert('Hamarosan...')">🎡</div>
+        <div class="side-btn" onclick="alert('Fejlesztés alatt...')">🎡</div>
     </div>
 
     <div class="main-content">
-        <div class="auth-container" id="auth-box">
-            <h2 id="auth-title">Bejelentkezés</h2>
-            <input type="email" id="email" placeholder="E-mail cím">
-            <input type="password" id="password" placeholder="Jelszó">
-            <button class="primary-btn" id="auth-btn">Belépés</button>
-            <p onclick="toggleAuth()" style="cursor:pointer; font-size: 0.9em; color: gold; margin-top:20px;">Fiók váltása</p>
-        </div>
-
-        <div class="game-container hidden" id="selector-box">
-            <h2>Válassz egy Hőst!</h2>
-            <div class="class-selector" id="class-list"></div>
+        <div class="game-container" id="auth-box">
+             <h2 id="auth-title">Hősök Hajnala</h2>
+             <input type="email" id="email" placeholder="E-mail cím" style="width:80%; padding:10px; margin:10px; background:#333; color:white; border:none; border-radius:5px;">
+             <input type="password" id="password" placeholder="Jelszó" style="width:80%; padding:10px; margin:10px; background:#333; color:white; border:none; border-radius:5px;">
+             <button class="primary-btn" id="auth-btn">Belépés</button>
         </div>
 
         <div class="game-container hidden" id="game-ui">
-            <h2 style="font-size: 2.2em; margin-bottom: 15px; color: gold;">
-                <span id="char-name-display">-</span>
-                <div class="info-trigger" onclick="openInfo()">i</div>
-            </h2>
+            <div class="char-header">
+                <span class="char-name" id="char-name-display">MAGE</span>
+                <button class="info-trigger" onclick="openInfo()">i</button>
+            </div>
+            
             <img id="active-char-img" src="" alt="Hősöd">
-            <br>
+            
             <div class="stat-box">
                 <span style="color: #ff4d4d;" id="stat-hp">❤️ HP: 0</span>
                 <span style="color: #444;">|</span>
@@ -94,119 +84,72 @@
     </div>
 
     <script type="module">
+        // Firebase importok maradnak...
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAfEx0o1BDUjMiD6plcBGxrBh_n_bUHlI8",
             authDomain: "porgetosjatek.firebaseapp.com",
             projectId: "porgetosjatek",
             storageBucket: "porgetosjatek.firebasestorage.app",
-            messagingSenderId: "460225202442",
-            appId: "1:460225202442:web:701d5416bd407aa97d92f3",
-            measurementId: "G-89RDPJFLFC"
+            appId: "1:460225202442:web:701d5416bd407aa97d92f3"
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- DINAMIKUS ADATBANK ---
         const HERO_DATA = {
             'Warrior': { 
-                img: 'warrior.jpg', hp: 150, atk: 15, 
-                info: "Erős védelem, gyorsabb regeneráció, hamarabb telik le a Kazamaták várakozási ideje!" 
+                img: '2441.jpg', hp: 150, atk: 15, 
+                info: "„Az acél és a becsület az utad.” Rendíthetetlen védelmednek köszönhetően gyorsabban regenerálódsz a csaták után, és a Kazamaták mélyén is kevesebbet kell pihenned a kalandok között." 
             },
             'Mage': { 
-                img: 'mage.jpg', hp: 80, atk: 35, 
-                info: "Törékeny, de nagy sebzés, minden nap +1 szerencsekerék pörgetés!" 
+                img: '2443.jpg', hp: 80, atk: 35, 
+                info: "„A mágia veszélyes, de a tudás hatalom.” Bár tested törékeny, pusztító varázslataid nem ismernek kegyelmet. A sors kegyeltjeként minden nap +1 lehetőséged van megpörgetni a Szerencsekereket!" 
             },
             'Scout': { 
-                img: 'scout.jpg', hp: 110, atk: 25, 
-                info: "Gyors és ravasz, lesből támad, mindig 2x akkora sebzéssel kezdi a küzdelmet!" 
+                img: '2442.jpg', hp: 110, atk: 25, 
+                info: "„Az árnyék a szövetségesed.” Gyorsaságod és ravaszságod legendás; mindig az árnyak közül csapsz le, így minden küzdelmet dupla sebzéssel indítasz, mielőtt az ellenség feleszmélne." 
             }
         };
 
-        let currentUser = null;
         let selectedClassName = "";
-
-        // --- AUTH ---
-        window.toggleAuth = () => {
-            const t = document.getElementById('auth-title');
-            const b = document.getElementById('auth-btn');
-            t.innerText = t.innerText === "Bejelentkezés" ? "Regisztráció" : "Bejelentkezés";
-            b.innerText = t.innerText;
-        };
-
-        document.getElementById('auth-btn').onclick = async () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            try {
-                if (document.getElementById('auth-btn').innerText === "Bejelentkezés") await signInWithEmailAndPassword(auth, email, password);
-                else await createUserWithEmailAndPassword(auth, email, password);
-            } catch (e) { alert("Hiba: " + e.message); }
-        };
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                currentUser = user;
                 document.getElementById('auth-box').classList.add('hidden');
                 document.getElementById('sidebar').classList.remove('hidden');
                 document.getElementById('logout-ui').classList.remove('hidden');
-                
                 const docSnap = await getDoc(doc(db, "users", user.uid));
                 if (docSnap.exists()) loadCharacter(docSnap.data().className);
-                else { renderSelectionMenu(); document.getElementById('selector-box').classList.remove('hidden'); }
-            } else { location.reload; }
+            }
         });
-
-        window.logout = () => signOut(auth).then(() => location.reload());
-
-        // --- JÁTÉK ---
-        function renderSelectionMenu() {
-            const list = document.getElementById('class-list');
-            list.innerHTML = "";
-            Object.keys(HERO_DATA).forEach(key => {
-                const card = document.createElement('div');
-                card.className = "class-card";
-                card.onclick = () => saveAndChoose(key);
-                card.innerHTML = `<img src="${HERO_DATA[key].img}"><span>${key}</span>`;
-                list.appendChild(card);
-            });
-        }
-
-        window.saveAndChoose = async (className) => {
-            await setDoc(doc(db, "users", currentUser.uid), { className: className, gold: 0 });
-            loadCharacter(className);
-        };
 
         function loadCharacter(className) {
             selectedClassName = className;
             const char = HERO_DATA[className];
-            document.getElementById('selector-box').classList.add('hidden');
             document.getElementById('game-ui').classList.remove('hidden');
-            document.getElementById('char-name-display').innerText = className.toUpperCase();
+            document.getElementById('char-name-display').innerText = className;
             document.getElementById('active-char-img').src = char.img;
             document.getElementById('stat-hp').innerText = `❤️ HP: ${char.hp}`;
             document.getElementById('stat-atk').innerText = `⚔️ ATK: ${char.atk}`;
         }
 
-        // --- MODAL FUNKCIÓK ---
         window.openInfo = () => {
             const char = HERO_DATA[selectedClassName];
-            document.getElementById('modal-title').innerText = selectedClassName + " Képességei";
+            document.getElementById('modal-title').innerText = selectedClassName + " Legendája";
             document.getElementById('modal-text').innerText = char.info;
             document.getElementById('info-modal').classList.add('active');
         };
 
-        window.closeInfo = () => {
-            document.getElementById('info-modal').classList.remove('active');
-        };
-
+        window.closeInfo = () => document.getElementById('info-modal').classList.remove('active');
+        window.logout = () => signOut(auth).then(() => location.reload());
         window.showSection = (id) => {
-            document.querySelectorAll('.game-container').forEach(c => c.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
+             document.querySelectorAll('.game-container').forEach(c => c.classList.add('hidden'));
+             document.getElementById(id).classList.remove('hidden');
         };
     </script>
 </body>
