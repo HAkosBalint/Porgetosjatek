@@ -15,7 +15,6 @@
             overflow: hidden; 
         }
 
-        /* BAL OLDALI MENÜ VISSZAÁLLÍTÁSA */
         .sidebar { 
             width: 70px; 
             background: #111; 
@@ -59,9 +58,9 @@
             flex-direction: column; 
             align-items: center; 
             border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* KARAKTER KÉP JAVÍTÁSA */
         #active-char-img { 
             width: 100%; 
             max-width: 280px; 
@@ -70,7 +69,7 @@
             border-radius: 15px; 
             border: 3px solid gold; 
             margin: 15px 0;
-            background: #222; /* Helykitöltő, amíg a kép be nem tölt */
+            background: #222;
         }
 
         .stat-box { 
@@ -89,12 +88,36 @@
         #lucky-wheel-canvas { width: 100%; height: 100%; border-radius: 50%; border: 4px solid gold; transition: transform 5s cubic-bezier(0.1, 0, 0, 1); }
         .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 40px; color: gold; z-index: 10; }
 
-        .primary-btn { width: 100%; padding: 15px; background: gold; border: none; border-radius: 10px; font-weight: bold; margin-top: 15px; cursor: pointer; }
+        .primary-btn { width: 100%; padding: 15px; background: gold; border: none; border-radius: 10px; font-weight: bold; margin-top: 15px; cursor: pointer; color: black; }
+        .secondary-btn { background: transparent; color: gold; border: none; margin-top: 10px; cursor: pointer; text-decoration: underline; }
+        
         .hidden { display: none !important; }
-        input { width: 90%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; background: #333; color: white; }
+        input { width: 90%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #333; color: white; }
+
+        /* EGYEDI MODAL / ERROR ABLAK */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+        .modal-box {
+            background: #1a1a1a; border: 2px solid #ff4d4d; padding: 25px;
+            border-radius: 15px; max-width: 300px; text-align: center;
+            box-shadow: 0 0 20px rgba(255, 77, 77, 0.3);
+        }
+        .modal-box h3 { color: #ff4d4d; margin-top: 0; }
+        .modal-box p { color: #ccc; font-size: 14px; line-height: 1.5; }
     </style>
 </head>
 <body>
+
+    <div id="error-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h3 id="error-title">Hiba történt!</h3>
+            <p id="error-message">Ismeretlen hiba lépett fel a rendszerben.</p>
+            <button class="primary-btn" style="background: #ff4d4d; color: white;" onclick="closeError()">Értem</button>
+        </div>
+    </div>
 
     <div id="sidebar" class="sidebar hidden">
         <div class="side-btn" onclick="showSection('game-ui')">👤</div>
@@ -104,10 +127,14 @@
 
     <div class="main-content">
         <div class="game-container" id="auth-box">
-            <h2 style="color: gold;">Bejelentkezés</h2>
+            <h2 id="auth-title" style="color: gold;">Bejelentkezés</h2>
             <input type="email" id="email" placeholder="E-mail">
             <input type="password" id="password" placeholder="Jelszó">
+            
+            <input type="text" id="char-class" class="hidden" placeholder="Karakter neve (pl. Lovag)">
+
             <button class="primary-btn" id="auth-btn">Belépés</button>
+            <button class="secondary-btn" id="toggle-auth">Még nincs fiókom: Regisztráció</button>
         </div>
 
         <div class="game-container hidden" id="game-ui">
@@ -133,10 +160,17 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyAfEx0o1BDUjMiD6plcBGxrBh_n_bUHlI8", authDomain: "porgetosjatek.firebaseapp.com", projectId: "porgetosjatek", storageBucket: "porgetosjatek.firebasestorage.app", appId: "1:460225202442:web:701d5416bd407aa97d92f3" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAfEx0o1BDUjMiD6plcBGxrBh_n_bUHlI8", 
+            authDomain: "porgetosjatek.firebaseapp.com", 
+            projectId: "porgetosjatek", 
+            storageBucket: "porgetosjatek.firebasestorage.app", 
+            appId: "1:460225202442:web:701d5416bd407aa97d92f3" 
+        };
+        
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -156,8 +190,27 @@
             { label: "+5 ATK", color: "#2a2a2a", type: 'atk', val: 5 }
         ];
 
-        let currentUser = null, currentRotation = 0, isSpinning = false;
+        let currentUser = null, currentRotation = 0, isSpinning = false, isLoginMode = true;
 
+        // --- ERROR MODAL KEZELÉS ---
+        window.showError = (msg) => {
+            document.getElementById('error-message').innerText = msg;
+            document.getElementById('error-modal').classList.remove('hidden');
+        };
+        window.closeError = () => {
+            document.getElementById('error-modal').classList.add('hidden');
+        };
+
+        // --- AUTH VÁLTÓ ---
+        document.getElementById('toggle-auth').onclick = () => {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').innerText = isLoginMode ? "Bejelentkezés" : "Regisztráció";
+            document.getElementById('auth-btn').innerText = isLoginMode ? "Belépés" : "Hős Létrehozása";
+            document.getElementById('toggle-auth').innerText = isLoginMode ? "Még nincs fiókom: Regisztráció" : "Már van fiókom: Bejelentkezés";
+            document.getElementById('char-class').classList.toggle('hidden', isLoginMode);
+        };
+
+        // --- KERÉK RAJZOLÁS ---
         function drawWheel() {
             const canvas = document.getElementById("lucky-wheel-canvas");
             const ctx = canvas.getContext("2d");
@@ -201,17 +254,17 @@
 
                 const userRef = doc(db, "users", currentUser.uid);
                 await updateDoc(userRef, { [prize.type === 'gold' ? 'gold' : prize.type === 'hp' ? 'bonusHP' : 'bonusATK']: increment(prize.val) });
-                document.getElementById("wheel-result").innerText = "Nyertél: " + prize.label;
+                document.getElementById("wheel-result").innerText = "Szerzemény: " + prize.label;
                 updateUI();
             }, 5000);
         };
 
         async function updateUI() {
+            if(!currentUser) return;
             const snap = await getDoc(doc(db, "users", currentUser.uid));
             if (snap.exists()) {
                 const d = snap.data();
                 document.getElementById('char-name-display').innerText = d.className;
-                // KÉP JAVÍTÁSA .JPG-RE
                 document.getElementById('active-char-img').src = d.className.toLowerCase() + ".jpg";
                 document.getElementById('stat-hp').innerText = `❤️ ${100 + (d.bonusHP || 0)}`;
                 document.getElementById('stat-atk').innerText = `⚔️ ${10 + (d.bonusATK || 0)}`;
@@ -237,8 +290,38 @@
 
         window.logout = () => signOut(auth).then(() => location.reload());
 
-        document.getElementById('auth-btn').onclick = () => {
-            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(e => alert(e.message));
+        // --- AUTH LOGIKA ---
+        document.getElementById('auth-btn').onclick = async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const className = document.getElementById('char-class').value || "Kalandor";
+
+            if(!email || !password) {
+                showError("Kérlek töltsd ki az e-mail és jelszó mezőket!");
+                return;
+            }
+
+            try {
+                if (isLoginMode) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } else {
+                    const res = await createUserWithEmailAndPassword(auth, email, password);
+                    // Új felhasználó alapadatai Firestore-ban
+                    await setDoc(doc(db, "users", res.user.uid), {
+                        className: className,
+                        gold: 100,
+                        bonusHP: 0,
+                        bonusATK: 0
+                    });
+                }
+            } catch (e) {
+                let hungarianError = "Hiba történt a művelet során!";
+                if(e.code === 'auth/invalid-credential') hungarianError = "Hibás e-mail vagy jelszó!";
+                if(e.code === 'auth/email-already-in-use') hungarianError = "Ez az e-mail cím már foglalt!";
+                if(e.code === 'auth/weak-password') hungarianError = "A jelszónak legalább 6 karakternek kell lennie!";
+                
+                showError(hungarianError);
+            }
         };
     </script>
 </body>
