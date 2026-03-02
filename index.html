@@ -12,55 +12,80 @@
         .side-btn { width: 50px; height: 50px; background: #333; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; transition: 0.3s; border: 1px solid #444; }
         .side-btn:hover { background: gold; color: black; transform: scale(1.1); }
 
-        /* Kijelentkezés gomb jobb felül */
+        /* Kijelentkezés gomb (Ajtó ikon) */
         .logout-btn {
             position: fixed;
             top: 20px;
             right: 20px;
-            width: 45px;
-            height: 45px;
-            background: rgba(255, 68, 68, 0.2);
-            border: 2px solid #ff4444;
-            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid gold;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 20px;
-            color: #ff4444;
+            font-size: 24px;
             transition: 0.3s;
             z-index: 100;
         }
-        .logout-btn:hover { background: #ff4444; color: white; box-shadow: 0 0 15px #ff4444; transform: rotate(90deg); }
+        .logout-btn:hover { background: gold; transform: scale(1.1); box-shadow: 0 0 15px gold; }
 
-        .main-content { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 20px; }
         
-        .auth-container, .game-container { background: #1e1e1e; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.7); width: 90%; max-width: 400px; text-align: center; }
+        .auth-container, .game-container { background: #1e1e1e; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.7); width: 95%; max-width: 500px; text-align: center; }
         
         /* Karakter választó */
         .class-selector { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
-        .class-card { border: 2px solid #444; padding: 10px; border-radius: 12px; cursor: pointer; transition: 0.3s; width: 90px; background: #252525; }
-        .class-card img { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; }
+        .class-card { border: 2px solid #444; padding: 10px; border-radius: 12px; cursor: pointer; transition: 0.3s; width: 100px; background: #252525; }
+        .class-card img { width: 100%; height: 110px; object-fit: cover; border-radius: 8px; }
+        .class-card span { display: block; margin-top: 5px; font-size: 0.8em; font-weight: bold; color: gold; }
         
-        /* Hős kép */
-        #active-char-img { max-width: 300px; border-radius: 20px; border: 3px solid gold; box-shadow: 0 0 40px rgba(255, 215, 0, 0.2); animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        /* Megnövelt Hős kép */
+        #active-char-img { 
+            width: 100%; 
+            max-width: 400px; /* Megnövelve */
+            border-radius: 25px; 
+            border: 4px solid gold; 
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.3); 
+            animation: float 4s ease-in-out infinite; 
+            margin-bottom: 20px;
+        }
+        
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        
+        /* Csicsás Statisztika Keret */
+        .stat-box {
+            display: inline-flex;
+            gap: 20px;
+            background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: 2px solid gold;
+            box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.2), 0 5px 15px rgba(0,0,0,0.5);
+            font-size: 1.2em;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .stat-hp { color: #ff4d4d; text-shadow: 0 0 5px rgba(255, 77, 77, 0.5); }
+        .stat-atk { color: #ffd700; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
         
         .hidden { display: none !important; }
-        input { width: 80%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; background: #333; color: white; }
-        .primary-btn { width: 85%; padding: 14px; background: gold; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        input { width: 85%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; background: #333; color: white; }
+        .primary-btn { width: 90%; padding: 14px; background: gold; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="logout-ui" class="logout-btn hidden" title="Kijelentkezés" onclick="logout()">
-        ⏻
+        🚪
     </div>
 
     <div id="sidebar" class="sidebar hidden">
         <div class="side-btn" title="Karakter" onclick="showSection('game-ui')">👤</div>
-        <div class="side-btn" title="Szerencsekerék" onclick="alert('Hamarosan!')">🎡</div>
-        <div class="side-btn" title="Bolt" onclick="alert('Hamarosan!')">💰</div>
+        <div class="side-btn" title="Szerencsekerék" onclick="alert('Fejlesztés alatt...')">🎡</div>
+        <div class="side-btn" title="Bolt" onclick="alert('Hamarosan nyit!')">💰</div>
     </div>
 
     <div class="main-content">
@@ -73,26 +98,29 @@
         </div>
 
         <div class="game-container hidden" id="selector-box">
-            <h2>Válassz Hőst!</h2>
-            <p style="font-size: 0.7em; color: gray;">Figyelem: Ezt a döntést nem tudod megváltoztatni!</p>
+            <h2>Hős Kiválasztása</h2>
+            <p style="font-size: 0.8em; color: #888;">Ezt a döntést egyszer hozhatod meg!</p>
             <div class="class-selector">
                 <div class="class-card" onclick="saveAndChoose('Warrior', 'warrior.jpg')">
-                    <img src="warrior.jpg"><span>Warrior</span>
+                    <img src="warrior.jpg"><span>WARRIOR</span>
                 </div>
                 <div class="class-card" onclick="saveAndChoose('Mage', 'mage.jpg')">
-                    <img src="mage.jpg"><span>Mage</span>
+                    <img src="mage.jpg"><span>MAGE</span>
                 </div>
                 <div class="class-card" onclick="saveAndChoose('Scout', 'scout.jpg')">
-                    <img src="scout.jpg"><span>Scout</span>
+                    <img src="scout.jpg"><span>SCOUT</span>
                 </div>
             </div>
         </div>
 
-        <div class="game-container hidden" id="game-ui">
-            <h2 id="char-name-display">Hősöd</h2>
-            <img id="active-char-img" src="">
-            <div id="stats" style="margin-top: 15px; font-weight: bold; color: gold;">
-                <span id="stat-hp"></span> | <span id="stat-atk"></span>
+        <div class="game-container hidden" id="game-ui" style="max-width: 600px;">
+            <h2 id="char-name-display" style="font-size: 2em; margin-top: 0;">-</h2>
+            <img id="active-char-img" src="" alt="Hősöd">
+            <br>
+            <div class="stat-box">
+                <span class="stat-hp" id="stat-hp">❤️ HP: 0</span>
+                <span style="color: #444;">|</span>
+                <span class="stat-atk" id="stat-atk">⚔️ ATK: 0</span>
             </div>
         </div>
     </div>
@@ -118,7 +146,6 @@
 
         let currentUser = null;
 
-        // --- AUTH ---
         window.toggleAuth = () => {
             const t = document.getElementById('auth-title');
             const b = document.getElementById('auth-btn');
@@ -151,12 +178,14 @@
             } else {
                 document.getElementById('logout-ui').classList.add('hidden');
                 document.getElementById('sidebar').classList.add('hidden');
+                document.getElementById('auth-box').classList.remove('hidden');
+                document.getElementById('game-ui').classList.add('hidden');
+                document.getElementById('selector-box').classList.add('hidden');
             }
         });
 
         window.logout = () => signOut(auth).then(() => location.reload());
 
-        // --- JÁTÉK ---
         window.saveAndChoose = async (name, img) => {
             if(!currentUser) return;
             await setDoc(doc(db, "users", currentUser.uid), {
@@ -171,10 +200,14 @@
         function loadCharacter(name, imgSrc) {
             document.getElementById('selector-box').classList.add('hidden');
             document.getElementById('game-ui').classList.remove('hidden');
-            document.getElementById('char-name-display').innerText = name;
+            document.getElementById('char-name-display').innerText = name.toUpperCase();
             document.getElementById('active-char-img').src = imgSrc;
             
-            const stats = { 'Warrior': ['❤️ 150', '⚔️ 15'], 'Mage': ['❤️ 80', '⚔️ 35'], 'Scout': ['❤️ 110', '⚔️ 25'] };
+            const stats = { 
+                'Warrior': ['❤️ HP: 150', '⚔️ ATK: 15'], 
+                'Mage': ['❤️ HP: 80', '⚔️ ATK: 35'], 
+                'Scout': ['❤️ HP: 110', '⚔️ ATK: 25'] 
+            };
             document.getElementById('stat-hp').innerText = stats[name][0];
             document.getElementById('stat-atk').innerText = stats[name][1];
         }
