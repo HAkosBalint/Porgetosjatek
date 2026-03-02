@@ -7,46 +7,101 @@
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: white; display: flex; margin: 0; height: 100vh; overflow: hidden; }
         
-        /* Oldalsáv */
-        .sidebar { width: 80px; background: #1a1a1a; border-right: 1px solid #333; display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 20px; z-index: 10; }
-        .side-btn { width: 50px; height: 50px; background: #333; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 24px; transition: 0.3s; border: 1px solid #444; }
-        .side-btn:hover { background: gold; transform: scale(1.1); }
+        /* Oldalsáv mobil optimalizálva */
+        .sidebar { width: 60px; background: #1a1a1a; border-right: 1px solid #333; display: flex; flex-direction: column; align-items: center; padding: 15px 0; gap: 15px; z-index: 10; }
+        .side-btn { width: 40px; height: 40px; background: #333; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; transition: 0.3s; border: 1px solid #444; }
 
-        .logout-btn { position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; background: rgba(255, 215, 0, 0.1); border: 2px solid gold; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 24px; transition: 0.3s; z-index: 100; }
-        .logout-btn:hover { background: gold; transform: scale(1.1); box-shadow: 0 0 15px gold; }
+        .logout-btn { position: fixed; top: 15px; right: 15px; width: 40px; height: 40px; background: rgba(255, 215, 0, 0.1); border: 2px solid gold; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; z-index: 100; }
 
-        .main-content { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 20px; }
-        .game-container { background: #1e1e1e; padding: 40px 30px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); width: 95%; max-width: 500px; text-align: center; border: 1px solid #333; }
+        .main-content { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 10px; }
+
+        /* JAVÍTOTT KONTÉNER ELRENDEZÉS */
+        .game-container { 
+            background: #1e1e1e; 
+            padding: 20px; 
+            border-radius: 25px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8); 
+            width: 100%;
+            max-width: 350px; /* Mobilbarát szélesség */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #333;
+        }
         
-        /* Javított fejléc rész a karakterlaphoz */
-        .char-header { margin-bottom: 25px; position: relative; z-index: 5; }
-        .char-name { font-size: 2.5em; color: gold; text-transform: uppercase; font-weight: 800; letter-spacing: 2px; margin: 0; text-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
+        /* Karakter név és infó gomb fent */
+        .char-header { 
+            margin-bottom: 15px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            width: 100%;
+        }
+        .char-name { 
+            font-size: 1.8em; 
+            color: gold; 
+            text-transform: uppercase; 
+            font-weight: 800; 
+            margin: 0;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
 
-        /* Hős profil kép */
-        #active-char-img { width: 100%; max-width: 380px; border-radius: 20px; border: 3px solid gold; box-shadow: 0 0 40px rgba(255, 215, 0, 0.2); animation: float 4s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        /* Megfelelő méretű kép mobilra is */
+        #active-char-img { 
+            width: 100%; 
+            aspect-ratio: 2/3; /* Megtartja az RPG karakterek arányát */
+            object-fit: cover;
+            border-radius: 15px; 
+            border: 2px solid gold; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            animation: float 4s ease-in-out infinite;
+        }
         
-        .stat-box { display: inline-flex; gap: 20px; background: #111; padding: 12px 30px; border-radius: 50px; border: 1px solid gold; margin-top: 25px; font-weight: bold; }
+        /* Statisztikák lent */
+        .stat-box { 
+            display: flex; 
+            gap: 15px; 
+            background: #111; 
+            padding: 10px 20px; 
+            border-radius: 30px; 
+            border: 1px solid gold; 
+            margin-top: 20px; 
+            font-weight: bold;
+            font-size: 0.9em;
+        }
         
-        .info-trigger { background: gold; color: black; border-radius: 50%; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; font-size: 16px; margin-left: 10px; transition: 0.3s; box-shadow: 0 0 10px gold; border: none; }
-        .info-trigger:hover { transform: rotate(15deg) scale(1.2); }
+        .info-trigger { 
+            background: gold; 
+            color: black; 
+            border-radius: 50%; 
+            width: 24px; 
+            height: 24px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 14px; 
+            margin-left: 10px; 
+            border: none;
+        }
 
-        /* MODAL */
-        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: 0.3s; }
+        /* MODAL (Hogy olvasható legyen a szöveg) */
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: 0.3s; padding: 20px; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-content { background: #1a1a1a; border: 2px solid gold; padding: 35px; border-radius: 25px; max-width: 450px; text-align: center; box-shadow: 0 0 50px rgba(255, 215, 0, 0.3); }
-        .modal-content h3 { color: gold; font-size: 1.8em; margin-bottom: 20px; border-bottom: 1px solid #444; padding-bottom: 10px; }
-        .modal-content p { line-height: 1.8; color: #eee; font-style: italic; font-size: 1.1em; }
+        .modal-content { background: #1a1a1a; border: 2px solid gold; padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; }
+        .modal-content p { line-height: 1.6; color: #eee; font-style: italic; }
 
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         .hidden { display: none !important; }
-        .primary-btn { width: 100%; padding: 15px; background: gold; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 20px; font-size: 1em; }
+        .primary-btn { width: 100%; padding: 12px; background: gold; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 15px; }
     </style>
 </head>
 <body>
 
     <div id="info-modal" class="modal-overlay" onclick="closeInfo()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 id="modal-title">-</h3>
+            <h3 id="modal-title" style="color: gold;">-</h3>
             <p id="modal-text">-</p>
             <button class="primary-btn" onclick="closeInfo()">Vissza a harchoz</button>
         </div>
@@ -56,17 +111,10 @@
 
     <div id="sidebar" class="sidebar hidden">
         <div class="side-btn" onclick="showSection('game-ui')">👤</div>
-        <div class="side-btn" onclick="alert('Fejlesztés alatt...')">🎡</div>
+        <div class="side-btn" onclick="alert('Pörgetés hamarosan!')">🎡</div>
     </div>
 
     <div class="main-content">
-        <div class="game-container" id="auth-box">
-             <h2 id="auth-title">Hősök Hajnala</h2>
-             <input type="email" id="email" placeholder="E-mail cím" style="width:80%; padding:10px; margin:10px; background:#333; color:white; border:none; border-radius:5px;">
-             <input type="password" id="password" placeholder="Jelszó" style="width:80%; padding:10px; margin:10px; background:#333; color:white; border:none; border-radius:5px;">
-             <button class="primary-btn" id="auth-btn">Belépés</button>
-        </div>
-
         <div class="game-container hidden" id="game-ui">
             <div class="char-header">
                 <span class="char-name" id="char-name-display">MAGE</span>
@@ -84,43 +132,26 @@
     </div>
 
     <script type="module">
-        // Firebase importok maradnak...
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAfEx0o1BDUjMiD6plcBGxrBh_n_bUHlI8",
-            authDomain: "porgetosjatek.firebaseapp.com",
-            projectId: "porgetosjatek",
-            storageBucket: "porgetosjatek.firebasestorage.app",
-            appId: "1:460225202442:web:701d5416bd407aa97d92f3"
-        };
-
+        // ... (Config marad a régi) ...
+        const firebaseConfig = { apiKey: "AIzaSyAfEx0o1BDUjMiD6plcBGxrBh_n_bUHlI8", authDomain: "porgetosjatek.firebaseapp.com", projectId: "porgetosjatek", storageBucket: "porgetosjatek.firebasestorage.app", appId: "1:460225202442:web:701d5416bd407aa97d92f3" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
         const HERO_DATA = {
-            'Warrior': { 
-                img: '2441.jpg', hp: 150, atk: 15, 
-                info: "„Az acél és a becsület az utad.” Rendíthetetlen védelmednek köszönhetően gyorsabban regenerálódsz a csaták után, és a Kazamaták mélyén is kevesebbet kell pihenned a kalandok között." 
-            },
-            'Mage': { 
-                img: '2443.jpg', hp: 80, atk: 35, 
-                info: "„A mágia veszélyes, de a tudás hatalom.” Bár tested törékeny, pusztító varázslataid nem ismernek kegyelmet. A sors kegyeltjeként minden nap +1 lehetőséged van megpörgetni a Szerencsekereket!" 
-            },
-            'Scout': { 
-                img: '2442.jpg', hp: 110, atk: 25, 
-                info: "„Az árnyék a szövetségesed.” Gyorsaságod és ravaszságod legendás; mindig az árnyak közül csapsz le, így minden küzdelmet dupla sebzéssel indítasz, mielőtt az ellenség feleszmélne." 
-            }
+            'Warrior': { img: '2441.jpg', hp: 150, atk: 15, info: "„Az acél és a becsület az utad.” Rendíthetetlen védelmednek köszönhetően gyorsabban regenerálódsz, és a Kazamaták mélyén is kevesebbet kell pihenned." },
+            'Mage': { img: '2443.jpg', hp: 80, atk: 35, info: "„A mágia hatalom.” Bár tested törékeny, pusztító varázslataid nem ismernek kegyelmet. Minden nap +1 ingyen pörgetést kapsz!" },
+            'Scout': { img: '2442.jpg', hp: 110, atk: 25, info: "„Az árnyék a szövetségesed.” Gyorsaságod legendás; mindig az árnyak közül csapsz le, így dupla sebzéssel indítasz." }
         };
 
         let selectedClassName = "";
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                document.getElementById('auth-box').classList.add('hidden');
                 document.getElementById('sidebar').classList.remove('hidden');
                 document.getElementById('logout-ui').classList.remove('hidden');
                 const docSnap = await getDoc(doc(db, "users", user.uid));
@@ -134,8 +165,8 @@
             document.getElementById('game-ui').classList.remove('hidden');
             document.getElementById('char-name-display').innerText = className;
             document.getElementById('active-char-img').src = char.img;
-            document.getElementById('stat-hp').innerText = `❤️ HP: ${char.hp}`;
-            document.getElementById('stat-atk').innerText = `⚔️ ATK: ${char.atk}`;
+            document.getElementById('stat-hp').innerText = `❤️ ${char.hp}`;
+            document.getElementById('stat-atk').innerText = `⚔️ ${char.atk}`;
         }
 
         window.openInfo = () => {
@@ -147,10 +178,6 @@
 
         window.closeInfo = () => document.getElementById('info-modal').classList.remove('active');
         window.logout = () => signOut(auth).then(() => location.reload());
-        window.showSection = (id) => {
-             document.querySelectorAll('.game-container').forEach(c => c.classList.add('hidden'));
-             document.getElementById(id).classList.remove('hidden');
-        };
     </script>
 </body>
 </html>
