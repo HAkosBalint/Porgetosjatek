@@ -38,15 +38,14 @@
         
         .stat-box { display: flex; gap: 10px; background: #111; padding: 10px 15px; border-radius: 30px; border: 1px solid gold; margin-top: 15px; font-weight: bold; font-size: 0.85em; }
         
-        /* KERÉK STABILIZÁLÁSA */
+        /* KERÉK JAVÍTÁS */
         .wheel-wrapper { 
             position: relative; 
-            width: 280px; 
-            height: 280px; 
-            margin: 15px auto;
+            width: 260px; /* Kicsit kisebb, hogy kényelmesen elférjen */
+            height: 260px; 
+            margin: 20px auto;
             border-radius: 50%;
-            perspective: none; /* Megakadályozza a ferde 3D nézetet */
-            transform-style: flat;
+            overflow: visible; /* Fontos, hogy a pointer látsszon */
         }
         
         #lucky-wheel-container {
@@ -54,29 +53,46 @@
             height: 100%;
             position: relative;
             transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1);
-            transform-style: flat; /* Kényszerített 2D forgatás */
+            transform-style: preserve-3d; /* Megtartja a síkot */
+            will-change: transform;
         }
 
-        #lucky-wheel { width: 100%; height: 100%; object-fit: contain; display: block; }
+        #lucky-wheel { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain; 
+            display: block;
+            border-radius: 50%;
+        }
 
-        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 35px; color: gold; z-index: 100; text-shadow: 0 0 10px black; }
+        .wheel-pointer { 
+            position: absolute; 
+            top: -25px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            font-size: 35px; 
+            color: gold; 
+            z-index: 200; 
+            text-shadow: 0 0 10px black; 
+        }
 
-        /* SZELET FELIRATOK */
+        /* SZELET FELIRATOK JAVÍTÁSA */
         .wheel-prize-label {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 120px;
-            transform-origin: 0% 50%;
+            width: 100px; /* Rövidebb szélesség, hogy a keréken belül maradjon */
+            height: 20px;
+            margin-top: -10px; /* Függőleges középre igazítás */
+            transform-origin: left center; /* Bal szélétől forgatunk */
             text-align: right;
-            color: white;
-            font-size: 11px;
+            color: #fff;
+            font-size: 10px;
             font-weight: 900;
-            text-shadow: 2px 2px 3px black;
-            white-space: nowrap;
-            z-index: 50;
+            text-shadow: 1px 1px 2px #000;
             pointer-events: none;
-            padding-right: 15px;
+            z-index: 150;
+            padding-right: 15px; /* Beljebb toljuk a szöveget a szélétől */
         }
 
         .info-trigger { background: gold; color: black; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; margin-left: 10px; border: none; }
@@ -157,9 +173,9 @@
         const db = getFirestore(app);
 
         const HERO_DATA = {
-            'Warrior': { img: 'warrior.png', hp: 150, atk: 15, info: "Warrior: Rendíthetetlen védelem." },
-            'Mage': { img: 'mage.png', hp: 80, atk: 35, info: "Mage: Hatalmas mágia, naponta +1 pörgetés!" },
-            'Scout': { img: 'scout.png', hp: 110, atk: 25, info: "Scout: Gyors és halálos árnyék." }
+            'Warrior': { img: 'warrior.png', hp: 150, atk: 15, info: "Warrior: Erős védelem." },
+            'Mage': { img: 'mage.png', hp: 80, atk: 35, info: "Mage: Nagy sebzés." },
+            'Scout': { img: 'scout.png', hp: 110, atk: 25, info: "Scout: Gyors és lopakodó." }
         };
 
         const WHEEL_PRIZES = [
@@ -176,11 +192,17 @@
         function generateWheelLabels() {
             const container = document.getElementById('lucky-wheel-container');
             container.querySelectorAll('.wheel-prize-label').forEach(el => el.remove());
+            
             WHEEL_PRIZES.forEach((p, i) => {
                 const label = document.createElement('div');
                 label.className = 'wheel-prize-label';
+                
+                // Forgatás: (index * 30 fok) + 15 fok (középre) - 90 fok (felülről indul)
                 const angle = (i * 30) + 15 - 90;
-                label.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translate(25px, 0)`; 
+                
+                // Csak forgatjuk, a szöveg a "width" miatt kerül a szélére
+                label.style.transform = `rotate(${angle}deg)`; 
+                
                 label.innerText = p.label;
                 container.appendChild(label);
             });
@@ -195,16 +217,19 @@
                 const snap = await getDoc(doc(db, "users", user.uid));
                 if (snap.exists()) {
                     loadCharacter(snap.data().className, snap.data().gold || 0, snap.data().bonusHP || 0, snap.data().bonusATK || 0);
-                    setTimeout(generateWheelLabels, 150);
+                    setTimeout(generateWheelLabels, 200); // Késleltetés a rendereléshez
                     showSection('game-ui');
                 }
             } else {
                 document.getElementById('auth-box').classList.remove('hidden');
                 document.getElementById('sidebar').classList.add('hidden');
+                document.getElementById('game-ui').classList.add('hidden');
+                document.getElementById('wheel-ui').classList.add('hidden');
+                document.getElementById('logout-ui').classList.add('hidden');
             }
         });
 
-        window.logout = () => signOut(auth).then(() => { localStorage.clear(); location.replace(location.pathname); });
+        window.logout = () => signOut(auth).then(() => { localStorage.clear(); location.reload(); });
 
         window.toggleAuth = () => {
             const t = document.getElementById('auth-title');
@@ -216,11 +241,12 @@
             try {
                 if (document.getElementById('auth-title').innerText === "Hősök Hajnala") await signInWithEmailAndPassword(auth, e, p);
                 else await createUserWithEmailAndPassword(auth, e, p);
-            } catch (err) { alert(err.message); }
+            } catch (err) { alert("Hiba: " + err.message); }
         };
 
         function loadCharacter(className, gold, bonusHP = 0, bonusATK = 0) {
             const char = HERO_DATA[className];
+            if (!char) return;
             document.getElementById('char-name-display').innerText = className;
             document.getElementById('active-char-img').src = char.img;
             document.getElementById('stat-hp').innerText = `❤️ HP: ${char.hp + bonusHP}`;
@@ -235,9 +261,9 @@
 
         window.openInfo = async () => {
             const snap = await getDoc(doc(db, "users", currentUser.uid));
-            const char = HERO_DATA[snap.data().className];
-            document.getElementById('modal-title').innerText = snap.data().className + " Legendája";
-            document.getElementById('modal-text').innerText = char.info;
+            const className = snap.data().className;
+            document.getElementById('modal-title').innerText = className + " Képességei";
+            document.getElementById('modal-text').innerText = HERO_DATA[className].info;
             document.getElementById('info-modal').classList.add('active');
         };
         window.closeInfo = () => document.getElementById('info-modal').classList.remove('active');
@@ -247,7 +273,8 @@
             isSpinning = true;
             const container = document.getElementById('lucky-wheel-container');
             const resultText = document.getElementById('wheel-result');
-            document.getElementById('spin-btn').disabled = true;
+            const btn = document.getElementById('spin-btn');
+            btn.disabled = true;
 
             const extraDegrees = Math.floor(Math.random() * 360);
             const totalRotation = 1800 + extraDegrees;
@@ -255,7 +282,7 @@
 
             setTimeout(async () => {
                 isSpinning = false;
-                document.getElementById('spin-btn').disabled = false;
+                btn.disabled = false;
                 const actualDegree = extraDegrees % 360;
                 const prizeIndex = Math.floor((360 - actualDegree) / 30) % 12;
                 const prize = WHEEL_PRIZES[prizeIndex];
