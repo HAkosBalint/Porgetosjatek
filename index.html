@@ -7,7 +7,7 @@
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: white; display: flex; margin: 0; height: 100vh; overflow: hidden; }
         
-        /* Oldalsáv mobil optimalizálva */
+        /* Oldalsáv */
         .sidebar { width: 60px; background: #1a1a1a; border-right: 1px solid #333; display: flex; flex-direction: column; align-items: center; padding: 15px 0; gap: 15px; z-index: 10; }
         .side-btn { width: 45px; height: 45px; background: #333; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 22px; transition: 0.3s; border: 1px solid #444; }
         .side-btn:hover { background: gold; color: black; transform: scale(1.1); }
@@ -37,12 +37,12 @@
 
         #active-char-img { width: 100%; aspect-ratio: 2/3; object-fit: cover; border-radius: 15px; border: 2px solid gold; box-shadow: 0 5px 20px rgba(0,0,0,0.5); animation: float 4s ease-in-out infinite; }
         
-        .stat-box { display: flex; gap: 12px; background: #111; padding: 10px 18px; border-radius: 30px; border: 1px solid gold; margin-top: 15px; font-weight: bold; font-size: 0.9em; }
+        .stat-box { display: flex; gap: 10px; background: #111; padding: 10px 15px; border-radius: 30px; border: 1px solid gold; margin-top: 15px; font-weight: bold; font-size: 0.85em; }
         
-        /* Szerencsekerék dizájn */
-        .wheel-wrapper { position: relative; width: 260px; height: 260px; margin: 15px auto; }
-        #lucky-wheel { width: 100%; transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
-        .wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 28px; color: gold; z-index: 5; text-shadow: 0 0 10px black; }
+        /* Szerencsekerék */
+        .wheel-wrapper { position: relative; width: 280px; height: 280px; margin: 10px auto; }
+        #lucky-wheel { width: 100%; height: 100%; transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1); }
+        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 35px; color: gold; z-index: 10; text-shadow: 0 0 10px black; }
 
         .info-trigger { background: gold; color: black; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; font-size: 14px; margin-left: 10px; border: none; }
 
@@ -81,7 +81,7 @@
             <input type="email" id="email" placeholder="E-mail cím">
             <input type="password" id="password" placeholder="Jelszó">
             <button class="primary-btn" id="auth-btn">Belépés</button>
-            <p onclick="toggleAuth()" style="cursor:pointer; font-size: 0.8em; color: gold; margin-top:15px;">Regisztráció váltás</p>
+            <p onclick="toggleAuth()" style="cursor:pointer; font-size: 0.8em; color: gold; margin-top:15px;">Fiók váltása</p>
         </div>
 
         <div class="game-container hidden" id="game-ui">
@@ -113,7 +113,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAfEx0o1BDUjMiD6plcBGxrBh_n_bUHlI8",
@@ -128,19 +128,48 @@
         const db = getFirestore(app);
 
         const HERO_DATA = {
-            'Warrior': { img: '2441.jpg', hp: 150, atk: 15, info: "„Az acél és a becsület az utad.” Rendíthetetlen védelmednek köszönhetően gyorsabban regenerálódsz, és a Kazamaták mélyén is kevesebbet kell pihenned." },
-            'Mage': { img: '2443.jpg', hp: 80, atk: 35, info: "„A mágia hatalom.” Bár tested törékeny, pusztító varázslataid nem ismernek kegyelmet. Minden nap +1 ingyen pörgetést kapsz!" },
-            'Scout': { img: '2442.jpg', hp: 110, atk: 25, info: "„Az árnyék a szövetségesed.” Gyorsaságod legendás; mindig az árnyak közül csapsz le, így dupla sebzéssel indítasz." }
+            'Warrior': { img: 'warrior.png', hp: 150, atk: 15, info: "„Az acél és a becsület az utad.” Rendíthetetlen védelmednek köszönhetően gyorsabban regenerálódsz, és a Kazamaták mélyén is kevesebbet kell pihenned." },
+            'Mage': { img: 'mage.png', hp: 80, atk: 35, info: "„A mágia hatalom.” Bár tested törékeny, pusztító varázslataid nem ismernek kegyelmet. Minden nap +1 ingyen pörgetést kapsz!" },
+            'Scout': { img: 'scout.png', hp: 110, atk: 25, info: "„Az árnyék a szövetségesed.” Gyorsaságod legendás; mindig az árnyak közül csapsz le, így dupla sebzéssel indítasz." }
         };
+
+        const WHEEL_PRIZES = [
+            { type: 'gold', value: 100, label: "100 Arany" }, { type: 'hp', value: 5, label: "+5 HP" },
+            { type: 'gold', value: 20, label: "20 Arany" }, { type: 'atk', value: 2, label: "+2 ATK" },
+            { type: 'gold', value: 200, label: "200 Arany" }, { type: 'hp', value: 10, label: "+10 HP" },
+            { type: 'gold', value: 50, label: "50 Arany" }, { type: 'atk', value: 1, label: "+1 ATK" },
+            { type: 'gold', value: 10, label: "10 Arany" }, { type: 'hp', value: 2, label: "+2 HP" },
+            { type: 'gold', value: 500, label: "JACKPOT!" }, { type: 'atk', value: 5, label: "+5 ATK" }
+        ];
 
         let currentUser = null;
         let selectedClassName = "";
         let isSpinning = false;
 
-        // --- AUTH ---
+        onAuthStateChanged(auth, async (user) => {
+            const sections = ['auth-box', 'game-ui', 'wheel-ui', 'sidebar', 'logout-ui'];
+            sections.forEach(id => document.getElementById(id).classList.add('hidden'));
+
+            if (user) {
+                currentUser = user;
+                document.getElementById('sidebar').classList.remove('hidden');
+                document.getElementById('logout-ui').classList.remove('hidden');
+                const docSnap = await getDoc(doc(db, "users", user.uid));
+                if (docSnap.exists()) {
+                    loadCharacter(docSnap.data().className, docSnap.data().gold || 0, docSnap.data().bonusHP || 0, docSnap.data().bonusATK || 0);
+                    document.getElementById('game-ui').classList.remove('hidden');
+                }
+            } else {
+                currentUser = null;
+                document.getElementById('auth-box').classList.remove('hidden');
+            }
+        });
+
+        window.logout = () => signOut(auth).then(() => { localStorage.clear(); location.replace(location.pathname); });
+
         window.toggleAuth = () => {
             const t = document.getElementById('auth-title');
-            t.innerText = t.innerText === "Hősök Hajnala" ? "Új Hős Regisztráció" : "Hősök Hajnala";
+            t.innerText = t.innerText === "Hősök Hajnala" ? "Regisztráció" : "Hősök Hajnala";
         };
 
         document.getElementById('auth-btn').onclick = async () => {
@@ -152,40 +181,13 @@
             } catch (e) { alert("Hiba: " + e.message); }
         };
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('auth-box').classList.add('hidden');
-                document.getElementById('sidebar').classList.remove('hidden');
-                document.getElementById('logout-ui').classList.remove('hidden');
-                const docSnap = await getDoc(doc(db, "users", user.uid));
-                if (docSnap.exists()) loadCharacter(docSnap.data().className, docSnap.data().gold || 0);
-            } else {
-                document.getElementById('sidebar').classList.add('hidden');
-                document.getElementById('logout-ui').classList.add('hidden');
-                document.getElementById('auth-box').classList.remove('hidden');
-                document.getElementById('game-ui').classList.add('hidden');
-                document.getElementById('wheel-ui').classList.add('hidden');
-            }
-        });
-
-        window.logout = () => {
-            signOut(auth).then(() => {
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.replace(window.location.pathname);
-            });
-        };
-
-        // --- JÁTÉK FUNKCIÓK ---
-        function loadCharacter(className, gold) {
+        function loadCharacter(className, gold, bonusHP = 0, bonusATK = 0) {
             selectedClassName = className;
             const char = HERO_DATA[className];
-            document.getElementById('game-ui').classList.remove('hidden');
             document.getElementById('char-name-display').innerText = className;
             document.getElementById('active-char-img').src = char.img;
-            document.getElementById('stat-hp').innerText = `❤️ ${char.hp}`;
-            document.getElementById('stat-atk').innerText = `⚔️ ${char.atk}`;
+            document.getElementById('stat-hp').innerText = `❤️ HP: ${char.hp + bonusHP}`;
+            document.getElementById('stat-atk').innerText = `⚔️ ATK: ${char.atk + bonusATK}`;
             document.getElementById('stat-gold').innerText = `💰 ${gold}`;
         }
 
@@ -200,42 +202,44 @@
             document.getElementById('modal-text').innerText = char.info;
             document.getElementById('info-modal').classList.add('active');
         };
-
         window.closeInfo = () => document.getElementById('info-modal').classList.remove('active');
 
-        // --- SZERENCSEKERÉK LOGIKA ---
         window.spinWheel = async () => {
             if (isSpinning) return;
             isSpinning = true;
-            
             const wheel = document.getElementById('lucky-wheel');
-            const btn = document.getElementById('spin-btn');
             const resultText = document.getElementById('wheel-result');
-            
-            btn.disabled = true;
-            resultText.innerText = "A sors dönt...";
+            document.getElementById('spin-btn').disabled = true;
 
-            const randomDegree = Math.floor(Math.random() * 360) + 1800; 
-            wheel.style.transform = `rotate(${randomDegree}deg)`;
+            const extraDegrees = Math.floor(Math.random() * 360);
+            const totalRotation = 1800 + extraDegrees;
+            wheel.style.transform = `rotate(${totalRotation}deg)`;
 
             setTimeout(async () => {
                 isSpinning = false;
-                btn.disabled = false;
-                const prizeGold = 50; // Teszt nyeremény
+                document.getElementById('spin-btn').disabled = false;
+                const actualDegree = extraDegrees % 360;
+                const prizeIndex = Math.floor((360 - actualDegree) / 30) % 12;
+                const prize = WHEEL_PRIZES[prizeIndex];
 
                 const userRef = doc(db, "users", currentUser.uid);
-                await updateDoc(userRef, { gold: increment(prizeGold) });
+                let updateData = {};
+                if (prize.type === 'gold') updateData.gold = increment(prize.value);
+                else if (prize.type === 'hp') updateData.bonusHP = increment(prize.value);
+                else if (prize.type === 'atk') updateData.bonusATK = increment(prize.value);
                 
+                await updateDoc(userRef, updateData);
                 const newSnap = await getDoc(userRef);
-                document.getElementById('stat-gold').innerText = `💰 ${newSnap.data().gold}`;
-                resultText.innerText = `Siker! Nyertél ${prizeGold} aranyat!`;
+                const d = newSnap.data();
+                loadCharacter(d.className, d.gold || 0, d.bonusHP || 0, d.bonusATK || 0);
+                resultText.innerText = `Nyeremény: ${prize.label}!`;
 
                 setTimeout(() => {
                     wheel.style.transition = "none";
-                    wheel.style.transform = `rotate(${randomDegree % 360}deg)`;
-                    setTimeout(() => wheel.style.transition = "transform 4s cubic-bezier(0.15, 0, 0.15, 1)", 50);
+                    wheel.style.transform = `rotate(${actualDegree}deg)`;
+                    setTimeout(() => wheel.style.transition = "transform 5s cubic-bezier(0.15, 0, 0.15, 1)", 50);
                 }, 500);
-            }, 4000);
+            }, 5000);
         };
     </script>
 </body>
