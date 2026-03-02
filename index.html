@@ -3,28 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Szerencse RPG - Karakterválasztó</title>
+    <title>Szerencse RPG - Hősök Hajnala</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #1a1a1a; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; overflow-x: hidden; }
-        .auth-container, .game-container { background: #2c2c2c; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 350px; text-align: center; transition: 0.5s; }
-        h2 { color: gold; margin-bottom: 20px; }
-        input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; background: #444; color: white; }
-        button { width: 100%; padding: 12px; margin-top: 15px; border-radius: 5px; border: none; background: gold; color: #1a1a1a; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #ffd700; transform: scale(1.05); }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: #0f0f0f; 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            margin: 0; 
+        }
         
-        /* Karakter választó stílusa */
-        .class-selector { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
-        .class-card { border: 2px solid #555; padding: 15px; border-radius: 10px; cursor: pointer; transition: 0.3s; width: 80px; text-align: center; }
-        .class-card:hover { border-color: gold; background: #3d3d3d; transform: translateY(-5px); }
-        .class-card img { width: 50px; height: 50px; display: block; margin: 0 auto 10px; }
-        .class-card span { font-size: 0.8em; font-weight: bold; }
+        /* Konténerek stílusa */
+        .auth-container, .game-container { 
+            background: #1e1e1e; 
+            padding: 30px; 
+            border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.7); 
+            width: 90%; 
+            max-width: 400px; 
+            text-align: center; 
+            border: 1px solid #333;
+        }
 
-        /* Megjelenített karakter a közepén */
-        #active-char { font-size: 5em; margin: 20px 0; display: block; animation: float 2s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        h2 { color: gold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
+        
+        /* Inputok és gombok */
+        input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; background: #333; color: white; outline: none; }
+        button { 
+            width: 100%; padding: 14px; margin-top: 15px; border-radius: 8px; border: none; 
+            background: linear-gradient(45deg, #ffd700, #b8860b); 
+            color: #000; font-weight: bold; cursor: pointer; transition: 0.3s; 
+        }
+        button:hover { transform: scale(1.03); filter: brightness(1.2); }
+
+        /* Karakter kártyák */
+        .class-selector { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+        .class-card { 
+            border: 2px solid #444; padding: 10px; border-radius: 12px; 
+            cursor: pointer; transition: 0.3s; width: 100px; background: #252525;
+        }
+        .class-card:hover { border-color: gold; transform: translateY(-5px); box-shadow: 0 5px 15px rgba(218, 165, 32, 0.4); }
+        .class-card img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
+        .class-card span { font-size: 0.9em; font-weight: bold; color: #ccc; }
+
+        /* Aktív karakter nézet */
+        #active-char-img { 
+            width: 100%; max-width: 250px; border-radius: 15px; 
+            border: 3px solid gold; box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            margin: 20px 0; animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
 
         .hidden { display: none; }
-        .toggle-link { margin-top: 15px; font-size: 0.8em; color: #bbb; cursor: pointer; }
+        .toggle-link { margin-top: 15px; font-size: 0.8em; color: #888; cursor: pointer; }
+        .toggle-link b { color: gold; }
     </style>
 </head>
 <body>
@@ -34,22 +74,22 @@
         <input type="email" id="email" placeholder="E-mail cím">
         <input type="password" id="password" placeholder="Jelszó">
         <button id="auth-btn">Belépés</button>
-        <div class="toggle-link" id="toggle-auth">Nincs fiókod? <b>Regisztráció</b></div>
+        <div class="toggle-link" id="toggle-auth">Még nincs fiókod? <b>Regisztráció</b></div>
     </div>
 
     <div class="game-container hidden" id="selector-box">
         <h2>Válassz Hőst!</h2>
         <div class="class-selector">
-            <div class="class-card" onclick="chooseClass('Warrior', '⚔️')">
-                <div style="font-size: 30px;">⚔️</div>
+            <div class="class-card" onclick="chooseClass('Warrior', 'warrior.jpg')">
+                <img src="warrior.jpg" alt="Warrior">
                 <span>Warrior</span>
             </div>
-            <div class="class-card" onclick="chooseClass('Mage', '🪄')">
-                <div style="font-size: 30px;">🪄</div>
+            <div class="class-card" onclick="chooseClass('Mage', 'mage.jpg')">
+                <img src="mage.jpg" alt="Mage">
                 <span>Mage</span>
             </div>
-            <div class="class-card" onclick="chooseClass('Scout', '🏹')">
-                <div style="font-size: 30px;">🏹</div>
+            <div class="class-card" onclick="chooseClass('Scout', 'scout.jpg')">
+                <img src="scout.jpg" alt="Scout">
                 <span>Scout</span>
             </div>
         </div>
@@ -57,15 +97,19 @@
 
     <div class="game-container hidden" id="game-ui">
         <h2 id="char-name-display">Hősöd</h2>
-        <div id="active-char"></div>
-        <p>Készen állsz a kalandra?</p>
-        <button onclick="location.reload()" style="background: #ff4444; color: white;">Kijelentkezés</button>
+        <img id="active-char-img" src="" alt="Kiválasztott hős">
+        <div id="stats" style="margin-bottom: 15px; color: #aaa;">
+            <span id="stat-hp"></span> | <span id="stat-atk"></span>
+        </div>
+        <button id="spin-btn" style="background: linear-gradient(45deg, #00c6ff, #0072ff); color: white;">SZERENCSEKERÉK (Hamarosan)</button>
+        <button onclick="location.reload()" style="background: #444; color: white; margin-top: 10px; font-size: 0.8em;">Kijelentkezés</button>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+        // A te konfigurációd
         const firebaseConfig = {
             apiKey: "AIzaSyAfEx0o1BDUjMiD6plcBGxrBh_n_bUHlI8",
             authDomain: "porgetosjatek.firebaseapp.com",
@@ -79,12 +123,15 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // --- AUTH LOGIKA ---
+        // --- AUTH KEZELÉS ---
         let isLogin = true;
-        document.getElementById('toggle-auth').onclick = () => {
+        const toggleBtn = document.getElementById('toggle-auth');
+        
+        toggleBtn.onclick = () => {
             isLogin = !isLogin;
             document.getElementById('auth-title').innerText = isLogin ? "Bejelentkezés" : "Regisztráció";
             document.getElementById('auth-btn').innerText = isLogin ? "Belépés" : "Regisztráció";
+            toggleBtn.innerHTML = isLogin ? "Még nincs fiókod? <b>Regisztráció</b>" : "Már van fiókod? <b>Belépek</b>";
         };
 
         document.getElementById('auth-btn').onclick = async () => {
@@ -92,7 +139,10 @@
             const password = document.getElementById('password').value;
             try {
                 if (isLogin) await signInWithEmailAndPassword(auth, email, password);
-                else await createUserWithEmailAndPassword(auth, email, password);
+                else {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                    alert("Sikeres regisztráció!");
+                }
             } catch (e) { alert("Hiba: " + e.message); }
         };
 
@@ -103,12 +153,25 @@
             }
         });
 
-        // --- JÁTÉK LOGIKA ---
-        window.chooseClass = (name, icon) => {
+        // --- JÁTÉK KEZELÉS ---
+        window.chooseClass = (name, imgSrc) => {
             document.getElementById('selector-box').classList.add('hidden');
             document.getElementById('game-ui').classList.remove('hidden');
+            
             document.getElementById('char-name-display').innerText = name;
-            document.getElementById('active-char').innerText = icon;
+            document.getElementById('active-char-img').src = imgSrc;
+
+            // Alap statisztikák beállítása
+            if(name === 'Warrior') {
+                document.getElementById('stat-hp').innerText = "❤️ HP: 150";
+                document.getElementById('stat-atk').innerText = "⚔️ ATK: 15";
+            } else if(name === 'Mage') {
+                document.getElementById('stat-hp').innerText = "❤️ HP: 80";
+                document.getElementById('stat-atk').innerText = "⚔️ ATK: 35";
+            } else {
+                document.getElementById('stat-hp').innerText = "❤️ HP: 110";
+                document.getElementById('stat-atk').innerText = "⚔️ ATK: 25";
+            }
         };
     </script>
 </body>
