@@ -177,7 +177,48 @@
         };
 
         window.closeInfo = () => document.getElementById('info-modal').classList.remove('active');
-        window.logout = () => signOut(auth).then(() => location.reload());
+        // JAVÍTOTT KIJELENTKEZÉS
+window.logout = () => {
+    signOut(auth)
+        .then(() => {
+            // Töröljük a helyi tárolót is, hogy biztosan ne maradjon beragadva adat
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Teljes újratöltés kényszerítése a szerverről (true paraméterrel)
+            window.location.replace(window.location.pathname);
+        })
+        .catch((error) => {
+            console.error("Hiba a kijelentkezéskor:", error);
+        });
+};
+
+// JAVÍTOTT ÁLLAPOTFIGYELŐ
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        currentUser = user;
+        document.getElementById('sidebar').classList.remove('hidden');
+        document.getElementById('logout-ui').classList.remove('hidden');
+        document.getElementById('auth-box').classList.add('hidden'); // Rejtsük el az auth-ot biztosan
+        
+        const docSnap = await getDoc(doc(db, "users", user.uid));
+        if (docSnap.exists()) {
+            loadCharacter(docSnap.data().className);
+        } else {
+            renderSelectionMenu();
+            document.getElementById('selector-box').classList.remove('hidden');
+        }
+    } else {
+        // Ha NINCS felhasználó, mindent rejtsünk el és CSAK a bejelentkezést mutassuk
+        currentUser = null;
+        document.getElementById('sidebar').classList.add('hidden');
+        document.getElementById('logout-ui').classList.add('hidden');
+        document.getElementById('game-ui').classList.add('hidden');
+        document.getElementById('selector-box').classList.add('hidden');
+        document.getElementById('auth-box').classList.remove('hidden');
+    }
+});
+        
     </script>
 </body>
 </html>
