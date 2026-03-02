@@ -38,14 +38,15 @@
         
         .stat-box { display: flex; gap: 10px; background: #111; padding: 10px 15px; border-radius: 30px; border: 1px solid gold; margin-top: 15px; font-weight: bold; font-size: 0.85em; }
         
-        /* SZERENCSEKERÉK FIXÁLÁSA */
+        /* KERÉK STABILIZÁLÁSA */
         .wheel-wrapper { 
             position: relative; 
-            width: 280px;  /* Fix szélesség */
-            height: 280px; /* Fix magasság - NINCS ELDEFORMÁLÓDÁS */
+            width: 280px; 
+            height: 280px; 
             margin: 15px auto;
             border-radius: 50%;
-            overflow: hidden;
+            perspective: none; /* Megakadályozza a ferde 3D nézetet */
+            transform-style: flat;
         }
         
         #lucky-wheel-container {
@@ -53,33 +54,33 @@
             height: 100%;
             position: relative;
             transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1);
+            transform-style: flat; /* Kényszerített 2D forgatás */
         }
 
-        #lucky-wheel { width: 100%; height: 100%; object-fit: cover; }
+        #lucky-wheel { width: 100%; height: 100%; object-fit: contain; display: block; }
 
-        .wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 35px; color: gold; z-index: 20; text-shadow: 0 0 10px black; }
+        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 35px; color: gold; z-index: 100; text-shadow: 0 0 10px black; }
 
-        /* Szelet feliratok */
+        /* SZELET FELIRATOK */
         .wheel-prize-label {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 130px;
-            transform-origin: 0% 0%;
+            width: 120px;
+            transform-origin: 0% 50%;
             text-align: right;
             color: white;
-            font-size: 10px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px black;
+            font-size: 11px;
+            font-weight: 900;
+            text-shadow: 2px 2px 3px black;
             white-space: nowrap;
-            z-index: 10;
-            padding-right: 15px;
+            z-index: 50;
             pointer-events: none;
+            padding-right: 15px;
         }
 
         .info-trigger { background: gold; color: black; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; margin-left: 10px; border: none; }
 
-        /* Modal */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.92); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-content { background: #1a1a1a; border: 2px solid gold; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; }
@@ -138,7 +139,7 @@
                 <div class="wheel-pointer">▼</div>
                 <div id="lucky-wheel-container">
                     <img id="lucky-wheel" src="luckywheel.png" alt="Szerencsekerék">
-                    </div>
+                </div>
             </div>
             <button class="primary-btn" id="spin-btn" onclick="spinWheel()">Pörgetés!</button>
             <p id="wheel-result" style="margin-top: 15px; font-weight: bold; color: gold; min-height: 1.2em;"></p>
@@ -157,20 +158,20 @@
 
         const HERO_DATA = {
             'Warrior': { img: 'warrior.png', hp: 150, atk: 15, info: "Warrior: Rendíthetetlen védelem." },
-            'Mage': { img: 'mage.png', hp: 80, atk: 35, info: "Mage: Törékeny, de nagy sebzés, minden nap +1 szerencsekerék pörgetés!" },
-            'Scout': { img: 'scout.png', hp: 110, atk: 25, info: "Scout: Gyorsaság és lopakodás." }
+            'Mage': { img: 'mage.png', hp: 80, atk: 35, info: "Mage: Hatalmas mágia, naponta +1 pörgetés!" },
+            'Scout': { img: 'scout.png', hp: 110, atk: 25, info: "Scout: Gyors és halálos árnyék." }
         };
 
         const WHEEL_PRIZES = [
-            { type: 'gold', value: 100, label: "100 Arany" }, { type: 'hp', value: 5, label: "+5 HP" },
-            { type: 'gold', value: 20, label: "20 Arany" }, { type: 'atk', value: 2, label: "+2 ATK" },
-            { type: 'gold', value: 200, label: "200 Arany" }, { type: 'hp', value: 10, label: "+10 HP" },
-            { type: 'gold', value: 50, label: "50 Arany" }, { type: 'atk', value: 1, label: "+1 ATK" },
-            { type: 'gold', value: 10, label: "10 Arany" }, { type: 'hp', value: 2, label: "+2 HP" },
-            { type: 'gold', value: 500, label: "JACKPOT!" }, { type: 'atk', value: 5, label: "+5 ATK" }
+            { type: 'gold', value: 100, label: "100 Gold" }, { type: 'hp', value: 5, label: "+5 HP" },
+            { type: 'gold', value: 20, label: "20 Gold" }, { type: 'atk', value: 2, label: "+2 ATK" },
+            { type: 'gold', value: 200, label: "200 Gold" }, { type: 'hp', value: 10, label: "+10 HP" },
+            { type: 'gold', value: 50, label: "50 Gold" }, { type: 'atk', value: 1, label: "+1 ATK" },
+            { type: 'gold', value: 10, label: "10 Gold" }, { type: 'hp', value: 2, label: "+2 HP" },
+            { type: 'gold', value: 500, label: "JACKPOT" }, { type: 'atk', value: 5, label: "+5 ATK" }
         ];
 
-        let currentUser = null, selectedClassName = "", isSpinning = false;
+        let currentUser = null, isSpinning = false;
 
         function generateWheelLabels() {
             const container = document.getElementById('lucky-wheel-container');
@@ -178,7 +179,8 @@
             WHEEL_PRIZES.forEach((p, i) => {
                 const label = document.createElement('div');
                 label.className = 'wheel-prize-label';
-                label.style.transform = `translate(-50%, -50%) rotate(${(i * 30) + 15 - 90}deg) translate(25px, 0)`; 
+                const angle = (i * 30) + 15 - 90;
+                label.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translate(25px, 0)`; 
                 label.innerText = p.label;
                 container.appendChild(label);
             });
@@ -193,7 +195,7 @@
                 const snap = await getDoc(doc(db, "users", user.uid));
                 if (snap.exists()) {
                     loadCharacter(snap.data().className, snap.data().gold || 0, snap.data().bonusHP || 0, snap.data().bonusATK || 0);
-                    generateWheelLabels();
+                    setTimeout(generateWheelLabels, 150);
                     showSection('game-ui');
                 }
             } else {
@@ -218,7 +220,6 @@
         };
 
         function loadCharacter(className, gold, bonusHP = 0, bonusATK = 0) {
-            selectedClassName = className;
             const char = HERO_DATA[className];
             document.getElementById('char-name-display').innerText = className;
             document.getElementById('active-char-img').src = char.img;
@@ -232,9 +233,10 @@
             document.getElementById(id).classList.remove('hidden');
         };
 
-        window.openInfo = () => {
-            const char = HERO_DATA[selectedClassName];
-            document.getElementById('modal-title').innerText = selectedClassName + " Képességei";
+        window.openInfo = async () => {
+            const snap = await getDoc(doc(db, "users", currentUser.uid));
+            const char = HERO_DATA[snap.data().className];
+            document.getElementById('modal-title').innerText = snap.data().className + " Legendája";
             document.getElementById('modal-text').innerText = char.info;
             document.getElementById('info-modal').classList.add('active');
         };
@@ -259,15 +261,14 @@
                 const prize = WHEEL_PRIZES[prizeIndex];
 
                 const userRef = doc(db, "users", currentUser.uid);
-                let updateData = {};
-                if (prize.type === 'gold') updateData.gold = increment(prize.value);
-                else if (prize.type === 'hp') updateData.bonusHP = increment(prize.value);
-                else if (prize.type === 'atk') updateData.bonusATK = increment(prize.value);
+                let up = {};
+                if (prize.type === 'gold') up.gold = increment(prize.value);
+                else if (prize.type === 'hp') up.bonusHP = increment(prize.value);
+                else if (prize.type === 'atk') up.bonusATK = increment(prize.value);
                 
-                await updateDoc(userRef, updateData);
+                await updateDoc(userRef, up);
                 const snap = await getDoc(userRef);
-                const d = snap.data();
-                loadCharacter(d.className, d.gold || 0, d.bonusHP || 0, d.bonusATK || 0);
+                loadCharacter(snap.data().className, snap.data().gold || 0, snap.data().bonusHP || 0, snap.data().bonusATK || 0);
                 resultText.innerText = `Nyeremény: ${prize.label}!`;
 
                 setTimeout(() => {
